@@ -62,6 +62,6 @@ def main(q):
 
 
 if __name__ == "__main__":
-    q = "What is the chorus of Blindside by James Arthur?"
+    q = "What is the chorus of A Thousand Years by James Arthur?"
     ans = main(q)
     print(ans)

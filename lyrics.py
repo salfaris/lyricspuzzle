@@ -47,4 +47,14 @@ def save_song(song: lyricsgenius.types.Song):
 
     fname_ext = f"{fname}.{ext}"
 
+    def add_artist_title_top(fname):
+        with open(fname, "r+") as f:
+            content = f.read()
+
+            # Insert the new line at the beginning of the file
+            f.seek(0)
+            f.write(f"{song.artist} - {song.title}\n\n" + content)
+
+    add_artist_title_top(fname_ext)
+
     shutil.move(fname_ext, LYRICS_LIB / fname_ext)
