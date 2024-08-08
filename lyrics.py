@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 import shutil
 
+import lyricsgenius
 from lyricsgenius import Genius
-from lyricsgenius.types import Song
 
 LYRICS_LIB = Path(__file__) / "lyrics"
 LYRICS_LIB.mkdir(exist_ok=True, parents=True)
@@ -27,7 +27,7 @@ def find_song(title: str, artist_name: str):
     return song
 
 
-def save_song(song: Song):
+def save_song(song: lyricsgenius.types.Song):
     fname = "{}_{}".format(
         _lyrics_fname_fmt(song.artist),
         _lyrics_fname_fmt(song.title),
