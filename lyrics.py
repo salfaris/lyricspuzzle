@@ -2,6 +2,7 @@ from getpass import getpass
 import os
 from pathlib import Path
 import shutil
+import unicodedata
 
 import lyricsgenius
 from lyricsgenius import Genius
@@ -32,29 +33,34 @@ def _to_camel_case(text):
     return camel_case_text
 
 
+def _preprocess(text: str):
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+    text = text.lstrip()
+    return text
+
+
 def find_song(song: Song) -> lyricsgenius.types.Song:
     song = GENIUS.search_song(song.title, song.artist)
     return song
 
 
 def save_song(song: lyricsgenius.types.Song):
-    fname = "{}_{}".format(
-        _to_camel_case(song.artist),
-        _to_camel_case(song.title),
-    )
+    artist = _preprocess(song.artist)
+    title = _preprocess(song.title)
+
+    fname = "{}_{}".format(_to_camel_case(artist), _to_camel_case(title))
     ext = "txt"
-    song.save_lyrics(filename=fname, extension=ext)
+    song.save_lyrics(filename=fname, extension=ext, overwrite=True)
 
-    fname_ext = f"{fname}.{ext}"
-
-    def add_artist_title_top(fname):
-        with open(fname, "r+") as f:
+    def add_artist_title_top(filename):
+        with open(filename, "r+") as f:
             content = f.read()
 
             # Insert the new line at the beginning of the file
             f.seek(0)
-            f.write(f"{song.artist} - {song.title}\n\n" + content)
+            f.write(f"{artist} - {title}\n\n" + content)
 
+    fname_ext = f"{fname}.{ext}"
     add_artist_title_top(fname_ext)
 
     shutil.move(fname_ext, LYRICS_LIB / fname_ext)
