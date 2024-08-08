@@ -6,6 +6,7 @@ import unicodedata
 
 import lyricsgenius
 from lyricsgenius import Genius
+from lyricsgenius.utils import sanitize_filename
 from pydantic import BaseModel
 
 
@@ -14,7 +15,8 @@ class Song(BaseModel):
     title: str
 
 
-LYRICS_LIB = Path(__file__).parents[0] / "lyrics"
+BASE_DIR = Path(__file__).parents[0]
+LYRICS_LIB = BASE_DIR / "lyrics"
 LYRICS_LIB.mkdir(exist_ok=True, parents=True)
 
 try:
@@ -49,6 +51,7 @@ def save_song(song: lyricsgenius.types.Song):
     title = _preprocess(song.title)
 
     fname = "{}_{}".format(_to_camel_case(artist), _to_camel_case(title))
+    fname = sanitize_filename(fname)
     ext = "txt"
     song.save_lyrics(filename=fname, extension=ext, overwrite=True)
 
@@ -60,7 +63,14 @@ def save_song(song: lyricsgenius.types.Song):
             f.seek(0)
             f.write(f"{artist} - {title}\n\n" + content)
 
-    fname_ext = f"{fname}.{ext}"
-    add_artist_title_top(fname_ext)
+    try:
+        fname_ext = f"{fname}.{ext}"
+        add_artist_title_top(fname_ext)
 
-    shutil.move(fname_ext, LYRICS_LIB / fname_ext)
+        shutil.move(fname_ext, LYRICS_LIB / fname_ext)
+    except FileNotFoundError as e:
+        raise e
+    finally:
+        print(BASE_DIR / fname_ext)
+        if (BASE_DIR / fname_ext).exists():
+            (BASE_DIR / fname_ext).unlink()
