@@ -33,7 +33,7 @@ def main(q):
     llm = init_llm()
 
     lyrics = [f for f in LYRICS_LIB.iterdir() if f.is_file()]
-    loaders = [TextLoader(lyric) for lyric in lyrics]
+    loaders = [TextLoader(lyric, encoding="UTF-8") for lyric in lyrics]
 
     documents = []
     for loader in loaders:
