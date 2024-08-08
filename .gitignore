@@ -5,6 +5,7 @@
 # Local
 /notebooks
 /lyrics
+run2.py
 
 # VSCode
 ./vscode
