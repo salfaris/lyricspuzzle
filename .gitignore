@@ -2,6 +2,9 @@
 .DS_Store
 **/*.icloud
 
+# Local
+/notebooks
+
 # VSCode
 ./vscode
 
